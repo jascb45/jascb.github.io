@@ -11,7 +11,7 @@
             box-sizing: border-box;
             font-family: 'Microsoft YaHei', sans-serif;
         }
-        
+
         body {
             background: #0a0a2a;
             color: white;
@@ -19,7 +19,7 @@
             overflow: hidden;
             position: relative;
         }
-        
+
         .alert {
             position: fixed;
             background: linear-gradient(45deg, #ff4444, #ff6666);
@@ -33,20 +33,20 @@
             cursor: move;
             animation: shake 0.3s ease-in-out;
         }
-        
+
         .alert h3 {
             color: #fff;
             margin-bottom: 8px;
             font-size: 14px;
             font-weight: bold;
         }
-        
+
         .alert p {
             font-size: 12px;
             margin-bottom: 12px;
             line-height: 1.3;
         }
-        
+
         .alert button {
             background: #fff;
             color: #ff4444;
@@ -58,18 +58,80 @@
             font-size: 11px;
             float: right;
         }
-        
+
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-3px); }
             75% { transform: translateX(3px); }
+        }
+        
+        #qp {
+            width: 200px;
+            height: 200px;
+            background: #4c5ce9;
+            color: rgb(247, 46, 46);
+            display: flex;
+            font-size: 20px;
+            z-index: 10000;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
+            border-radius: 3px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+        }
+        #an {
+            width: 100px;
+            height: 60px;
+            background-color: #fff;
+            border: none;
+            margin: 10px auto;
+            border-radius: 3px;
+            font-size: 16px;
+        }
+        #zzz {
+            width: 600px;
+            height: 600px;
+            background: #ffffff;
+            color: rgb(0, 0, 0);
+            display: flex;
+            font-size: 20px;
+            z-index: 10000;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+            position: relative;
+        }
+
+        #zzz button {
+            width: 120px;
+            height: 40px;
+            background-color: #ffffff;
+            border: none;
+            margin: 10px auto;
+            border-radius: 5px;
+            font-size: 16px;
+            position: absolute;
+            bottom: 20px;
+            left: 350px;
+        }
+        #qp button:hover, #zzz button:hover {
+            box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <script>
         let alertCount = 0;
-        const maxAlerts = 100; // 修改这里调整弹窗总数
+        const maxAlerts = 5;
         const alertMessages = [
             "⚠️ 系统错误：心跳异常！",
             "🚨 警告：笑容导致过载",
@@ -92,40 +154,93 @@
             "🌈 光谱异常：你是唯一色彩",
             "💖 最终警告：ERROR"
         ];
-        
+        function downloadimg() {
+            const link = document.createElement('a');
+            link.href = './img/miss.png';
+            link.download = 'miss.png';
+            link.click();
+        }
+
         function createAlert() {
             if (alertCount >= maxAlerts) {
-                // 弹窗结束后执行你的代码
-                alert("弹窗结束！这里可以写你的后续逻辑");
-                return;
-            }
+            // 弹窗结束
+            const newDiv = document.createElement('div');
+            newDiv.id = "qp";
+            newDiv.innerHTML = `
+            <div style="margin: auto; text-align: center;">
+                <h1 style="color: red;">Error</h1>
+                <h2>是否修复？</h2>
+                <button id="an">继续</button>
+            </div>`;
+            document.body.appendChild(newDiv);
             
+            document.getElementById('an').addEventListener('click', function() {
+                const alerts = document.querySelectorAll('.alert');
+                const disappearSpeed = 1000;
+                
+                alerts.forEach((alert, index) => {
+                    setTimeout(() => {
+                        alert.style.transition = `all ${disappearSpeed}ms ease`;
+                        alert.style.opacity = '0';
+                        alert.style.transform = 'scale(0.8)';
+                        
+                        setTimeout(() => {
+                            alert.remove();
+                        }, disappearSpeed);
+                    }, index * 200);
+                });
+                
+                // 移除主弹窗后添加新元素
+                setTimeout(() => {
+                    document.getElementById('qp').remove();
+                    
+                    // 添加新元素
+                    const secondDiv = document.createElement('div');
+                    secondDiv.id = "zzz";
+                    secondDiv.innerHTML = `
+                        <div style="margin: auto; text-align: center;">
+                            <img src="./img/miss.png" alt="-w-" style="width:500px;height:500px;">
+                            <div><img src="./img/ggg.gif" alt="icon" style="width:70px;height:70px;">
+                                <button onclick="downloadimg()">下载图片</button>
+                                </div>
+                            
+                            
+                        </div>
+                    `;
+                    document.body.appendChild(secondDiv);
+                    
+                }, alerts.length * 200 + disappearSpeed);
+            });
+
+            return;
+            }   
+
             const alert = document.createElement('div');
             alert.className = 'alert';
-            
-            // 随机位置，允许部分超出屏幕
+
+            // 随机位置
             const randomX = Math.random() * (window.innerWidth + 100) - 50;
             const randomY = Math.random() * (window.innerHeight + 100) - 50;
-            
+
             alert.style.left = randomX + 'px';
             alert.style.top = randomY + 'px';
-            
+
             alert.innerHTML = `
                 <h3>${alertCount < 15 ? '⚠️ 系统警告' : '💖 特别提醒'}</h3>
-                <p>${alertMessages[alertCount]}</p >
+                <p>${alertMessages[alertCount % alertMessages.length]}</p > <!-- 防止数组越界 -->
                 <button onclick="this.parentElement.remove()">确定</button>
             `;
-            
+
             document.body.appendChild(alert);
             alertCount++;
-            
+
             // 让弹窗可拖动
             makeDraggable(alert);
-            
-            // 弹窗生成速度 - 修改这里的数值调整速度
+
+            // 弹窗生成速度
             const nextDelay = 50 + Math.random() * 150;
             setTimeout(createAlert, nextDelay);
-            
+
             // 随机自动关闭一些弹窗
             if (Math.random() > 0.7) {
                 setTimeout(() => {
@@ -135,12 +250,12 @@
                 }, 2000 + Math.random() * 3000);
             }
         }
-        
+
         function makeDraggable(element) {
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            
+
             element.onmousedown = dragMouseDown;
-            
+
             function dragMouseDown(e) {
                 e = e || window.event;
                 e.preventDefault();
@@ -150,7 +265,7 @@
                 document.onmousemove = elementDrag;
                 element.style.zIndex = '1001';
             }
-            
+
             function elementDrag(e) {
                 e = e || window.event;
                 e.preventDefault();
@@ -161,17 +276,17 @@
                 element.style.top = (element.offsetTop - pos2) + "px";
                 element.style.left = (element.offsetLeft - pos1) + "px";
             }
-            
+
             function closeDragElement() {
                 document.onmouseup = null;
                 document.onmousemove = null;
                 element.style.zIndex = '1000';
             }
         }
-        
+
         // 页面加载后开始弹窗
         window.onload = function() {
-            setTimeout(createAlert, 800); // 修改这里调整开始延迟
+            setTimeout(createAlert, 800);
         };
     </script>
 </body>
