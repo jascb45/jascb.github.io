@@ -18,6 +18,9 @@
             min-height: 100vh;
             overflow: hidden;
             position: relative;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
         }
 
         .alert {
@@ -94,8 +97,10 @@
         #zzz {
             width: 400px;
             height: 600px;
-            background: #ffffff;
-            color: rgb(0, 0, 0);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgb(255, 255, 255);
             display: flex;
             font-size: 20px;
             z-index: 10000;
@@ -111,27 +116,79 @@
         }
 
         #zzz button {
-            width: 120px;
+            width: 80px;
             height: 40px;
-            background-color: #ffffff;
+            background: rgba(255, 255, 255, 0.7);
             border: none;
             margin: 10px auto;
             border-radius: 5px;
             font-size: 16px;
             position: absolute;
             bottom: 20px;
-            left: 250px;
+            left: 290px;
         }
         #qp button:hover, #zzz button:hover {
-            box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.9);
             cursor: pointer;
+        }
+        #zzz img {
+            float: left;
+        }
+        
+        /* 雪花样式 */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+        
+        .snowflake.small {
+            width: 4px;
+            height: 4px;
+            animation-duration: 10s;
+        }
+        
+        .snowflake.medium {
+            width: 6px;
+            height: 6px;
+            animation-duration: 15s;
+        }
+        
+        .snowflake.large {
+            width: 8px;
+            height: 8px;
+            animation-duration: 20s;
+        }
+        
+        /* 雪花飘落动画 */
+        @keyframes fall {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.8;
+            }
+            70% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) translateX(20vw) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        #zzz img:active {
+            transform: scale(0.95);
+            transform: translateY(-5px);
         }
     </style>
 </head>
 <body>
     <script>
         let alertCount = 0;
-        const maxAlerts = 5;
+        const maxAlerts = 50;
         const alertMessages = [
             "⚠️ 系统错误：心跳异常！",
             "🚨 警告：笑容导致过载",
@@ -175,6 +232,13 @@
             document.body.appendChild(newDiv);
             
             document.getElementById('an').addEventListener('click', function() {
+                // 添加：立即关闭#qp弹窗
+                const qpElement = document.getElementById('qp');
+                if (qpElement) {
+                    qpElement.remove();
+                }
+
+                document.body.style.background = 'linear-gradient(to bottom, #1a2980, #26d0ce)';
                 const alerts = document.querySelectorAll('.alert');
                 const disappearSpeed = 1000;
                 
@@ -199,11 +263,13 @@
                     secondDiv.id = "zzz";
                     secondDiv.innerHTML = `
                         <div style="margin: auto; text-align: center;">
-                            <img src="./img/miss.png" alt="-w-" style="width:500px;height:500px;">
-                            <div><img src="./img/ggg.gif" alt="icon" style="width:70px;height:70px;">
+                            <img src="./img/miss.png" alt="-w-" style="width:400px;height:500px;">
+                            <div>
+                                
+                                <img src="./img/ggg.gif" alt="icon" style="width:70px;height:70px;">
                                 <button onclick="downloadimg()">下载图片</button>
                                 </div>
-                            
+                                <p style="width:150px; height: 130px; color: white; font-size: 15px;float: left;">你知道吗,其实这18号是个特别的日子,那个玩偶是来陪你的QWQ</p>
                             
                         </div>
                     `;
@@ -288,6 +354,49 @@
         window.onload = function() {
             setTimeout(createAlert, 800);
         };
+
+        // 创建雪花
+        function createSnowflakes(count) {
+            const snowContainer = document.body;
+            
+            for (let i = 0; i < count; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                
+                // 随机大小
+                const sizes = ['small', 'medium', 'large'];
+                const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+                snowflake.classList.add(randomSize);
+                
+                // 随机位置
+                snowflake.style.left = Math.random() * 100 + 'vw';
+                
+                // 随机动画延迟
+                snowflake.style.animationDelay = Math.random() * 20 + 's';
+                
+                // 随机飘落时间
+                const duration = 10 + Math.random() * 15;
+                snowflake.style.animationDuration = duration + 's';
+                
+                snowContainer.appendChild(snowflake);
+            }
+        }
+        
+        // 初始创建雪花
+        createSnowflakes(100);
+        
+        // 点击页面任意位置添加雪花
+        document.body.addEventListener('click', function(e) {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.classList.add('medium');
+            
+            snowflake.style.left = e.clientX + 'px';
+            snowflake.style.top = e.clientY + 'px';
+            snowflake.style.animationDuration = (8 + Math.random() * 10) + 's';
+            
+            document.body.appendChild(snowflake);
+        });
     </script>
 </body>
 </html>
